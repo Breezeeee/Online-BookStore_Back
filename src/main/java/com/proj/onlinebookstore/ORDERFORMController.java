@@ -30,6 +30,16 @@ public class ORDERFORMController {
         String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
         String minute = String.valueOf(calendar.get(Calendar.MINUTE));
         String second = String.valueOf(calendar.get(Calendar.SECOND));
+        if(month.length() == 1)
+            month = "0" + month;
+        if(day.length() == 1)
+            day = "0" + day;
+        if(hour.length() == 1)
+            hour = "0" + hour;
+        if(minute.length() == 1)
+            minute = "0" + minute;
+        if(second.length() == 1)
+            second = "0" + second;
         String date = year + "-" + month + "-" + day  + " " + hour + ":" + minute + ":" + second;
 
         String uuid = UUID.randomUUID().toString();
