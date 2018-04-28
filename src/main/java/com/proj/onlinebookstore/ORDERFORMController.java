@@ -22,7 +22,7 @@ public class ORDERFORMController {
     BOOKRepository bookRepository;
 
     @RequestMapping("/saveorder")
-    public Boolean save(String address, HttpSession httpSession) {
+    public String save(String address, HttpSession httpSession) {
         Calendar calendar = Calendar.getInstance();
         String year = String.valueOf(calendar.get(Calendar.YEAR));
         String month = String.valueOf(calendar.get(Calendar.MONTH)+1);
@@ -49,10 +49,11 @@ public class ORDERFORMController {
             item.setOidorcid(id);
             BOOK book = bookRepository.withIdBookQuery(item.getBid());
             book.setStock(book.getStock() - item.getNum());
+            book.setSales(book.getSales() + item.getNum());
             bookRepository.save(book);
             itemRepository.save(item);
         }
-        return true;
+        return id;
     }
 
     @RequestMapping("/qorder1")
@@ -64,6 +65,13 @@ public class ORDERFORMController {
 
     @RequestMapping("/qorder2")
     public String qorder2(String id) {
+        List<OrderModel> orderform = orderRepository.withOidOrderItemsQuery(id);
+        Gson gson = new Gson();
+        return gson.toJson(orderform);
+    }
+
+    @RequestMapping("/qorder3")
+    public String qorder3(String id) {
         ORDERFORM orderform = orderRepository.withOidOrderQuery(id);
         Gson gson = new Gson();
         return gson.toJson(orderform);
