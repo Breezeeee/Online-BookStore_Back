@@ -7,4 +7,7 @@ import org.springframework.data.repository.query.Param;
 public interface BOOKRepository extends JpaRepository<BOOK, Long> {
     @Query("select p from BOOK p where p.id=:id")
     BOOK withIdBookQuery(@Param("id") String id);
+
+    @Query("select b from BOOK b where b.name=:name and b.author=:author and b.language=:language and b.published=:published")
+    BOOK withNALPBookQuery(@Param("name") String name, @Param("author") String author, @Param("language") String language, @Param("published") String published);
 }

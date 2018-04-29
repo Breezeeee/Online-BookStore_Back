@@ -12,17 +12,19 @@ public class USER {
     private String email;
     private Long phonenumber;
     private Integer state;
+    private Boolean isAdmin;
 
     public USER() {
     }
 
-    public USER(String id, String username, String password, String email, Long phonenumber, Integer state) {
+    public USER(String id, String username, String password, String email, Long phonenumber, Integer state, Boolean isAdmin) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
         this.phonenumber = phonenumber;
         this.state = state;
+        this.isAdmin = isAdmin;
     }
 
     public String getId() {
@@ -71,5 +73,13 @@ public class USER {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public Boolean getAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        isAdmin = admin;
     }
 }

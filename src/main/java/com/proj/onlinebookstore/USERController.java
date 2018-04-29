@@ -15,6 +15,10 @@ public class USERController {
     USERRepository userRepository;
     @Autowired
     CARTRepository cartRepository;
+    @Autowired
+    ORDERFORMRepository orderformRepository;
+    @Autowired
+    ITEMRepository itemRepository;
 
     @RequestMapping("/checkusername")
     public String checkusername(String username) {
@@ -22,12 +26,13 @@ public class USERController {
             return "false";
         return "true";
     }
+
     @RequestMapping("/saveuser")
     public Boolean save(String username, String password, String email, Long phonenumber) {
         String uuid = UUID.randomUUID().toString();
         String[] idd = uuid.split("-");
         String id = idd[0] + idd[1] + idd[2];
-        userRepository.save(new USER(id, username, password, email, phonenumber, 1));
+        userRepository.save(new USER(id, username, password, email, phonenumber, 1, false));
         uuid = UUID.randomUUID().toString();
         idd = uuid.split("-");
         String cid = idd[0] + idd[1] + idd[2];
@@ -40,6 +45,9 @@ public class USERController {
         if(httpSession.getAttribute("user") == null) {
             return "null";
         }
+        USER user = userRepository.withIdUserQuery(httpSession.getAttribute("user").toString());
+        if(user.getAdmin())
+            return "admin";
         return "login";
     }
 
@@ -47,8 +55,12 @@ public class USERController {
     public String login(String username, String password, HttpSession httpSession) {
         USER user = userRepository.withUsernameAndPasswordUserQuery(username, password);
         if(user != null) {
+            if(user.getState() == 0)
+                return "false";
             httpSession.setAttribute("user", user.getId());
-            return user.getId();
+            if(user.getAdmin())
+                return "admin";
+            return "success";
         }
         return "null";
     }
@@ -74,6 +86,39 @@ public class USERController {
         user.setPhonenumber(phonenumber);
         userRepository.save(user);
         return true;
+    }
+
+    @RequestMapping("/ban_release")
+    public String bruser(String username, Integer state) {
+        USER user = userRepository.withUsernameUserQuery(username);
+        if(user == null)
+            return "null";
+        user.setState(state);
+        userRepository.save(user);
+        return "success";
+    }
+
+    @RequestMapping("/duser")
+    public String duser(String username) {
+        USER user = userRepository.withUsernameUserQuery(username);
+        if(user == null)
+            return "null";
+        CART cart = cartRepository.withUidCidQuery(user.getId());
+        List<ORDERFORM> orders = orderformRepository.findByUid(user.getId());
+        List<ITEM> items1 = itemRepository.findByOidorcid(cart.getCid());
+        for(ITEM item : items1) {
+            itemRepository.delete(item);
+        }
+        for(ORDERFORM order : orders) {
+            List<ITEM> items2 = itemRepository.findByOidorcid(order.getId());
+            for(ITEM item : items2) {
+                itemRepository.delete(item);
+            }
+            orderformRepository.delete(order);
+        }
+        cartRepository.delete(cart);
+        userRepository.delete(user);
+        return "success";
     }
 
     @RequestMapping("/alluser")

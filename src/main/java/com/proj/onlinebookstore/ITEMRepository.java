@@ -14,4 +14,7 @@ public interface ITEMRepository extends JpaRepository<ITEM, Long> {
 
     @Query("select i from ITEM i where i.oidorcid=:cid")
     List<ITEM> withCidItemQuery(@Param("cid") String cid);
+
+    @Query("select i from ITEM i where i.bid=:bid")
+    List<ITEM> withBidITEMQuery(@Param("bid") String bid);
 }
