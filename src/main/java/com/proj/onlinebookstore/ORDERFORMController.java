@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.Calendar;
@@ -85,5 +86,57 @@ public class ORDERFORMController {
         ORDERFORM orderform = orderRepository.withOidOrderQuery(id);
         Gson gson = new Gson();
         return gson.toJson(orderform);
+    }
+
+    @RequestMapping("/qorder4")
+    public String qorder4(String date1, String date2, String book, String author, HttpSession httpSession) {
+        if(book == null)
+            book = "";
+        if(author == null)
+            author = "";
+        List<ORDERFORM> orderform = orderRepository.findByUid(httpSession.getAttribute("user").toString());
+        List<ORDERFORM> res = new ArrayList<>();
+        for(ORDERFORM order : orderform) {
+            Boolean success = true;
+            if(order.getDate().compareTo(date1) < 0 || order.getDate().compareTo(date2) > 0)
+                success = false;
+            else {
+                List<OrderModel> items = orderRepository.withOidOrderItemsQuery(order.getId());
+                Boolean find = false;
+                for (OrderModel item : items) {
+                    if (item.getBname().contains(book) && item.getBauthor().contains(author))
+                        find = true;
+                }
+                if (!find)
+                    success = false;
+            }
+            if(success)
+                res.add(order);
+        }
+        Gson gson = new Gson();
+        return gson.toJson(res);
+    }
+
+    @RequestMapping("/statistics")
+    public String Statistics(String book, String author, String username, String date1, String date2) {
+        if(book == null)
+            book = "";
+        if(author == null)
+            author = "";
+        if(username == null)
+            username = "";
+        List<StatisticsModel> stats = orderRepository.OrderStatistics();
+        List<StatisticsModel> res = new ArrayList<>();
+        for(StatisticsModel stat : stats) {
+            Boolean success = true;
+            if(stat.getDate().compareTo(date1) < 0 || stat.getDate().compareTo(date2) > 0)
+                success = false;
+            if(!stat.getBookName().contains(book) || !stat.getAuthor().contains(author) || !stat.getUsername().contains(username))
+                success = false;
+            if(success)
+                res.add(stat);
+        }
+        Gson gson = new Gson();
+        return gson.toJson(res);
     }
 }
