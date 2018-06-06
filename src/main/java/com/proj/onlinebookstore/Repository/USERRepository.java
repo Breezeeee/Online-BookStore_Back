@@ -1,8 +1,10 @@
-package com.proj.onlinebookstore;
+package com.proj.onlinebookstore.Repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import com.proj.onlinebookstore.Entity.USER;
 
 public interface USERRepository extends JpaRepository<USER, Long> {
     @Query("select p from USER p where p.username=:username")

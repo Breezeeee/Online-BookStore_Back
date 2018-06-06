@@ -1,4 +1,4 @@
-package com.proj.onlinebookstore;
+package com.proj.onlinebookstore.Entity;
 
 public class StatisticsModel {
     private String OrderID;
